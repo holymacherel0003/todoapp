@@ -12,7 +12,7 @@
 		<section>
       <b-tabs size="is-medium"  position="is-centered" expanded v-model="activeTab">
         <b-tab-item label="Todos" icon="list">
-          <a class="button is-success is-small top-button" v-on:click="completeCheckedTodo()" @click="completeToast">
+          <a class="button is-success is-small top-button" v-on:click="completeCheckedTodo()">
             <span class="icon is-small">
               <i class="fa fa-check"></i>
             </span>
@@ -44,7 +44,7 @@
         </b-tab-item>
           
         <b-tab-item label="Completed" icon="check">
-          <a class="button is-danger is-small top-button" v-on:click="deleteCheckedCompletedTodo()" @click="deleteToast">
+          <a class="button is-danger is-small top-button" v-on:click="deleteCheckedCompletedTodo()">
             <span class="icon is-small">
               <i class="fa fa-trash"></i>
             </span>
@@ -142,11 +142,16 @@ export default {
     },
 
     completeCheckedTodo () {
+      let count = 0
       for (let task of this.tasks) {
         if (task.isChecked) {
           task.isChecked = false
           this.completeTodo(task)
+          count++
         }
+      }
+      if (count !== 0) {
+        this.completeToast(count)
       }
       this.setItems()
     },
@@ -176,25 +181,30 @@ export default {
     },
 
     deleteCheckedCompletedTodo () {
+      let count = 0
       for (let task of this.completeTasks) {
         if (task.isChecked) {
           this.deleteTodo(task)
+          count++
         }
+      }
+      if (count !== 0) {
+        this.deleteToast(count)
       }
       this.setItems()
     },
 
-    completeToast () {
+    completeToast (count) {
       this.$toast.open({
-        message: 'Completed Tasks!',
+        message: `Completed ${count} Tasks!`,
         type: 'is-success',
         position: 'is-bottom'
       })
     },
 
-    deleteToast () {
+    deleteToast (count) {
       this.$toast.open({
-        message: 'Deleted Tasks!',
+        message: `Deleted ${count} Tasks!`,
         type: 'is-success',
         position: 'is-bottom'
       })
