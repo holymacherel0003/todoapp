@@ -8,11 +8,15 @@ import store from './store'
 import Buefy from 'buefy'
 import 'buefy/dist/buefy.css'
 
+import '@fortawesome/fontawesome-free/css/all.min.css'
+
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.http = Vue.prototype.$http = axios
 Vue.config.productionTip = false
 
-Vue.use(Buefy)
+Vue.use(Buefy, {
+  defaultIconPack: 'fa'
+})
 
 /* eslint-disable no-new */
 new Vue({
