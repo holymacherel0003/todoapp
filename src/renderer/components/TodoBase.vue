@@ -12,10 +12,12 @@
 		<section>
       <b-tabs size="is-medium"  position="is-centered" expanded v-model="activeTab">
         <b-tab-item label="Todos" icon="list">
-          <b-collapse class="card" v-for="task in tasks" v-bind:data="task" v-bind:key="task.id">
+          <b-collapse class="card" :open="true" v-for="task in tasks" v-bind:data="task" v-bind:key="task.id">
             <div slot="trigger" slot-scope="props" class="card-header">
               <p class="card-header-title" >
-                {{ task.title }}
+                <b-checkbox v-model="task.isChecked">
+                  {{ task.title }}
+                </b-checkbox>
               </p>
               <a class="card-header-icon">
                 <b-icon
@@ -33,10 +35,11 @@
               <a class="card-footer-item" v-on:click="editTodo(task)">Edit</a>
             </footer>
           </b-collapse>
+          <button class="button is-primary" v-on:click="completeCheckedTodo()">Complete</button>
         </b-tab-item>
           
         <b-tab-item label="Completed" icon="check">
-          <b-collapse class="card" v-for="task in completeTasks" v-bind:data="task" v-bind:key="task.id">
+          <b-collapse :open="false" class="card" v-for="task in completeTasks" v-bind:data="task" v-bind:key="task.id">
             <div slot="trigger" slot-scope="props" class="card-header">
               <p class="card-header-title">
                   {{ task.title }}
@@ -99,7 +102,8 @@ export default {
       const addData = {
         id: this.id,
         title: this.text,
-        detail: ''
+        detail: '',
+        isChecked: false
       }
       this.tasks.push(addData)
       this.id++
@@ -120,6 +124,15 @@ export default {
       this.completeTasks = this.completeTasks.filter((element) => {
         return element.id !== context.id
       })
+      this.setItems()
+    },
+
+    completeCheckedTodo () {
+      for (let task of this.tasks) {
+        if (task.isChecked) {
+          this.completeTodo(task)
+        }
+      }
       this.setItems()
     },
 
@@ -161,5 +174,11 @@ export default {
   width: 600px;
   margin: auto;
   padding: 20px 5px;
+  
+  section {
+    button {
+      margin: 5px;
+    }
+  }
 }
 </style>
