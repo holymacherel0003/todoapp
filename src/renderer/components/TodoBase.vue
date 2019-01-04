@@ -1,6 +1,7 @@
 <template>
   <div class="todo">
     <b-modal :active.sync="isComponentModalActive " has-modal-card>
+      <todo-editor v-bind="editorProps" v-on:edit="completeEdit"></todo-editor>
     </b-modal>
 		<b-field>
 			<b-input v-model="text" minlength="1" maxlength="30" placeholder="Add Task"></b-input>
@@ -31,8 +32,8 @@
             v-on:click="toggleComplete(task)">
               {{ task.complete ? 'Uncomplete' : 'Complete' }}
             </a>
-          <a class="card-footer-item" v-on:click="editTodo()">Edit</a>
-          <a class="card-footer-item">Delete</a>
+          <a class="card-footer-item" v-on:click="editTodo(task)">Edit</a>
+          <a class="card-footer-item" v-on:click="deleteTodo(task)">Delete</a>
         </footer>
 			</b-collapse>
 		</section>
@@ -40,8 +41,13 @@
 </template>
 
 <script>
+import TodoEditor from '@/components/TodoEditor'
+
 export default {
   name: 'ToDo',
+  components: {
+    'todo-editor': TodoEditor
+  },
   data () {
     return {
       text: '',
@@ -54,7 +60,12 @@ export default {
           detail: 'hogehogehoge',
           complete: false
         }
-      ]
+      ],
+      editorProps: {
+        id: 0,
+        title: '',
+        detail: ''
+      }
     }
   },
 
@@ -77,8 +88,22 @@ export default {
         context.complete = true
       }
     },
-    editTodo () {
+    editTodo (context) {
+      this.editorProps.id = context.id
+      this.editorProps.title = context.title
+      this.editorProps.detail = context.detail
       this.isComponentModalActive = true
+    },
+    completeEdit (editedTask) {
+      console.log(this.tasks.filter((element) => { return element.id === editedTask.id }))
+      this.tasks.filter((element) => { return element.id === editedTask.id })[0].title = editedTask.title
+      this.tasks.filter((element) => { return element.id === editedTask.id })[0].detail = editedTask.detail
+      this.isComponentModalActive = false
+    },
+    deleteTodo (context) {
+      this.tasks = this.tasks.filter((element) => {
+        return element.id !== context.id
+      })
     }
   }
 }
