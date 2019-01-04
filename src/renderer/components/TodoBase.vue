@@ -48,6 +48,7 @@ export default {
   components: {
     'todo-editor': TodoEditor
   },
+
   data () {
     return {
       text: '',
@@ -69,6 +70,11 @@ export default {
     }
   },
 
+  mounted () {
+    this.id = localStorage.getItem('id')
+    this.tasks = JSON.parse(localStorage.getItem('tasks')) || []
+  },
+
   methods: {
     addTodo () {
       const addData = {
@@ -80,7 +86,9 @@ export default {
       this.tasks.push(addData)
       this.id++
       this.text = ''
+      this.setItems()
     },
+
     toggleComplete (context) {
       if (context.complete) {
         context.complete = false
@@ -88,22 +96,31 @@ export default {
         context.complete = true
       }
     },
+
     editTodo (context) {
       this.editorProps.id = context.id
       this.editorProps.title = context.title
       this.editorProps.detail = context.detail
       this.isComponentModalActive = true
     },
+
     completeEdit (editedTask) {
-      console.log(this.tasks.filter((element) => { return element.id === editedTask.id }))
       this.tasks.filter((element) => { return element.id === editedTask.id })[0].title = editedTask.title
       this.tasks.filter((element) => { return element.id === editedTask.id })[0].detail = editedTask.detail
       this.isComponentModalActive = false
+      this.setItems()
     },
+
     deleteTodo (context) {
       this.tasks = this.tasks.filter((element) => {
         return element.id !== context.id
       })
+      this.setItems()
+    },
+
+    setItems () {
+      localStorage.setItem('id', this.id)
+      localStorage.setItem('tasks', JSON.stringify(this.tasks))
     }
   }
 }
