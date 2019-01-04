@@ -2,6 +2,8 @@
 
 > A simple todo app
 
+![Screen Shot](https://github.com/holymacherel0003/todoapp/blob/master/assets/screenshot.png)
+
 #### Build Setup
 
 ``` bash
