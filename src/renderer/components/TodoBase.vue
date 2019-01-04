@@ -8,15 +8,27 @@
 			<p class="control">
 				<button	class="button is-primary" v-on:click="addTodo()">＋</button>
 			</p>
+      <a class="button is-danger init-button" @click="confirmInitialize">
+        <span class="icon is-small">
+          <i class="fa fa-times-circle"></i>
+        </span>
+        <span>Init All List</span>
+      </a>
 		</b-field>
 		<section>
-      <b-tabs size="is-medium"  position="is-centered" expanded v-model="activeTab">
+      <b-tabs size="is-medium" position="is-centered" expanded v-model="activeTab">
         <b-tab-item label="Todos" icon="list">
           <a class="button is-success is-small top-button" v-on:click="completeCheckedTodo()">
             <span class="icon is-small">
               <i class="fa fa-check"></i>
             </span>
             <span>Complete</span>
+          </a>
+          <a class="button is-success is-small top-button" @click="confirmCompleteAllTasks">
+            <span class="icon is-small">
+              <i class="fa fa-check"></i>
+            </span>
+            <span>Complete All</span>
           </a>
           <b-collapse class="card" :open="true" v-for="task in tasks" v-bind:data="task" v-bind:key="task.id">
             <div slot="trigger" slot-scope="props" class="card-header">
@@ -49,6 +61,12 @@
               <i class="fa fa-trash"></i>
             </span>
             <span>Delete</span>
+          </a>
+          <a class="button is-danger is-small top-button" @click="confirmDeleteAllCompletedTasks">
+            <span class="icon is-small">
+              <i class="fa fa-trash"></i>
+            </span>
+            <span>Delete All</span>
           </a>
           <b-collapse :open="false" class="card" v-for="task in completeTasks" v-bind:data="task" v-bind:key="task.id">
             <div slot="trigger" slot-scope="props" class="card-header">
@@ -111,6 +129,13 @@ export default {
   },
 
   methods: {
+    initializeTodo () {
+      this.id = 1
+      this.tasks = []
+      this.completeTasks = []
+      this.setItems()
+    },
+
     addTodo () {
       const addData = {
         id: this.id,
@@ -129,6 +154,18 @@ export default {
       this.completeTasks.push(context)
       this.tasks = this.tasks.filter((element) => {
         return element.id !== context.id
+      })
+      this.setItems()
+    },
+
+    completeAllTodo () {
+      for (let task of this.tasks) {
+        this.completeTodo(task)
+      }
+      this.$toast.open({
+        message: `Completed All Tasks!`,
+        type: 'is-success',
+        position: 'is-bottom'
       })
       this.setItems()
     },
@@ -194,6 +231,16 @@ export default {
       this.setItems()
     },
 
+    deleteAllCompletedTodo () {
+      this.completeTasks = []
+      this.$toast.open({
+        message: `Deleted All Completed Tasks!`,
+        type: 'is-danger',
+        position: 'is-bottom'
+      })
+      this.setItems()
+    },
+
     completeToast (count) {
       this.$toast.open({
         message: `Completed ${count} Tasks!`,
@@ -207,6 +254,35 @@ export default {
         message: `Deleted ${count} Tasks!`,
         type: 'is-success',
         position: 'is-bottom'
+      })
+    },
+
+    confirmInitialize () {
+      this.$dialog.confirm({
+        title: 'Initialize',
+        message: 'This action will reset all tasks list. Are you sure you want to continue this action?',
+        confirmText: 'Initialize',
+        type: 'is-danger',
+        hasIcon: true,
+        onConfirm: () => this.initializeTodo()
+      })
+    },
+
+    confirmCompleteAllTasks () {
+      this.$dialog.confirm({
+        message: 'Are you sure you want to complete all tasks?',
+        onConfirm: () => this.completeAllTodo()
+      })
+    },
+
+    confirmDeleteAllCompletedTasks () {
+      this.$dialog.confirm({
+        title: 'Deleting All Tasks',
+        message: 'Are you sure you want to <b>delete</b> all completed tasks? This action cannot be undone.',
+        confirmText: 'Delete',
+        type: 'is-danger',
+        hasIcon: true,
+        onConfirm: () => this.deleteAllCompletedTodo()
       })
     },
 
@@ -224,6 +300,10 @@ export default {
   width: 600px;
   margin: auto;
   padding: 20px 5px;
+
+  .init-button {
+      margin-left: 20px;
+  }
   
   section {
     .top-button {
