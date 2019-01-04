@@ -12,6 +12,12 @@
 		<section>
       <b-tabs size="is-medium"  position="is-centered" expanded v-model="activeTab">
         <b-tab-item label="Todos" icon="list">
+          <a class="button is-success is-small top-button" v-on:click="completeCheckedTodo()" @click="completeToast">
+            <span class="icon is-small">
+              <i class="fa fa-check"></i>
+            </span>
+            <span>Complete</span>
+          </a>
           <b-collapse class="card" :open="true" v-for="task in tasks" v-bind:data="task" v-bind:key="task.id">
             <div slot="trigger" slot-scope="props" class="card-header">
               <p class="card-header-title" >
@@ -35,14 +41,21 @@
               <a class="card-footer-item" v-on:click="editTodo(task)">Edit</a>
             </footer>
           </b-collapse>
-          <button class="button is-primary" v-on:click="completeCheckedTodo()">Complete</button>
         </b-tab-item>
           
         <b-tab-item label="Completed" icon="check">
+          <a class="button is-danger is-small top-button" v-on:click="deleteCheckedCompletedTodo()" @click="deleteToast">
+            <span class="icon is-small">
+              <i class="fa fa-trash"></i>
+            </span>
+            <span>Delete</span>
+          </a>
           <b-collapse :open="false" class="card" v-for="task in completeTasks" v-bind:data="task" v-bind:key="task.id">
             <div slot="trigger" slot-scope="props" class="card-header">
               <p class="card-header-title">
+                <b-checkbox v-model="task.isChecked">
                   {{ task.title }}
+                </b-checkbox>
               </p>
               <a class="card-header-icon">
                 <b-icon
@@ -112,6 +125,7 @@ export default {
     },
 
     completeTodo (context) {
+      context.isChecked = false
       this.completeTasks.push(context)
       this.tasks = this.tasks.filter((element) => {
         return element.id !== context.id
@@ -130,6 +144,7 @@ export default {
     completeCheckedTodo () {
       for (let task of this.tasks) {
         if (task.isChecked) {
+          task.isChecked = false
           this.completeTodo(task)
         }
       }
@@ -160,6 +175,31 @@ export default {
       this.setItems()
     },
 
+    deleteCheckedCompletedTodo () {
+      for (let task of this.completeTasks) {
+        if (task.isChecked) {
+          this.deleteTodo(task)
+        }
+      }
+      this.setItems()
+    },
+
+    completeToast () {
+      this.$toast.open({
+        message: 'Completed Tasks!',
+        type: 'is-success',
+        position: 'is-bottom'
+      })
+    },
+
+    deleteToast () {
+      this.$toast.open({
+        message: 'Deleted Tasks!',
+        type: 'is-success',
+        position: 'is-bottom'
+      })
+    },
+
     setItems () {
       localStorage.setItem('id', this.id)
       localStorage.setItem('tasks', JSON.stringify(this.tasks))
@@ -176,8 +216,8 @@ export default {
   padding: 20px 5px;
   
   section {
-    button {
-      margin: 5px;
+    .top-button {
+      margin-bottom: 10px;
     }
   }
 }
