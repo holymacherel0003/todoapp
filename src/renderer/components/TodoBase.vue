@@ -39,6 +39,10 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style scoped lang="scss">
+.todo {
+  width: 500px;
+  margin: auto;
+  padding: 20px 5px;
+}
 </style>
